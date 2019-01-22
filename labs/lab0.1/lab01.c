@@ -32,6 +32,7 @@ int main() {
             putchar('\n');
           }
       } 
+      // Check for /**/ comments
       else if (next == '*') 
       {
         previous = getchar();
@@ -42,12 +43,14 @@ int main() {
       } 
       else 
       {
+        // No comments then continue scanning
         putchar(current);
         putchar(previous = next);
       }
     } 
     else 
     {
+      // No comments then continue scanning
       putchar(previous = current);
     }
   }

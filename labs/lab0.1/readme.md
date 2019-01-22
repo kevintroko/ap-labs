@@ -11,4 +11,4 @@ gcc lab01.c
 printf("Hello world");
 
 ### Open the txt file to see the results
-
+In order to get an EOF in the output you have to do a ctrl+D. 
