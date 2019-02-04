@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int counter = 0;
 char *pch;
@@ -10,16 +11,17 @@ int strlen2(char *str) {
     return counter;
 }
 
-char* stradd2(char *origin, char *addition){
-    return origin;
+char* stradd(char *origin, char *addition){
+    int originS = strlen(origin);
+    int additionS = strlen(addition);
+    char* final = malloc(originS+additionS+1);
+    strcpy(final, origin);
+    strcat(final, addition);
+    return final;
 }
 
 char* strfind(char *origin, char *substr) {
     pch = strstr(origin , substr);
-    // printf("origin : %s\n", origin);
-    // printf("substr : %s\n", substr);
-    // printf("pch    : %s\n", pch);
-
     if(pch!=NULL) return "yes";
     else return "no";
 }
