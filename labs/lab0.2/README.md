@@ -14,4 +14,12 @@ This laboratory is focused on the C files linking
 gcc -c str-main.c -o str-main.o
 gcc -c strlib.c -o strlib.o
 gcc str-main.o strlib.o -o str-final.o
+./str-final "originalString" "stringToCompare"
+```
+
+or you can simply write in the terminal:
+```
+make
+./str-final "originalString" "stringToCompare"
+
 ```
