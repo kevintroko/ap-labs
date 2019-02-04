@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     if(argc > 3){
         printf("Initial Lenght      : %d\n", strlen2(argv[1]));
         printf("New String          : %s\n", stradd(argv[1], argv[2]));
-        printf("SubString was found : %s\n", strfind("hello", "hello"));
+        printf("SubString was found : %s\n", strfind(stradd(argv[1], argv[2]), argv[3]));
     } else {
         printf("incorrrect amount of arguments");
     }
