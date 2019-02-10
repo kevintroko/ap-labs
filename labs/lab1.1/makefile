@@ -3,4 +3,5 @@ compile:
 	./mycat.o test.txt
 
 clean:
-	rm -rf mycat.o
+	rm mycat.o
+	rm cat.o
