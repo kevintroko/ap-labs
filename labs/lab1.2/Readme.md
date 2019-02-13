@@ -1,5 +1,4 @@
 # Lab 1.2
-==================
 
 ### Compilation
 I added a makefile to compile and run
@@ -15,7 +14,7 @@ make clean
 
 ### Other option
 
-problem with make file is that it will always print ** hello kevin ** so if you want personalized message then:
+problem with make file is that it will always print **hello kevin** so if you want personalized message then:
 
 ```
 	gcc broadcaster.c -o broadcaster.o
