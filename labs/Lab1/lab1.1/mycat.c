@@ -3,13 +3,13 @@
 #include <stdio.h>
 int main(int argc, char *argv[])
 {   
-    char data[1000];
+    char data[10000000];
     // Return -1 on error
     int file = open(argv[1] , O_RDONLY); 
     if (file == -1)
         printf("ERROR WHILE OPENING FILE\n");
 
-    int fd = read(file, data, 1000);
+    int fd = read(file, data, 10000000);
 
     if (fd < 0) {
         printf("Error!\n");
