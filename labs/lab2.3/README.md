@@ -51,6 +51,6 @@ make clean
 ````
 If everything fails for some reason then:
 ````
-rm *.out
+rm cross-ref
 rm -rf cross-ref
 ````
