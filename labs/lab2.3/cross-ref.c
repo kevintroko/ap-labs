@@ -3,6 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 
+
+
+// Based the characted handling from 
+// https://stackoverflow.com/questions/2661766/how-do-i-lowercase-a-string-in-c
+
+// Linked list inspiration from
+// https://www.learn-c.org/en/Linked_lists
+
 typedef struct s_words {
     char *str;            
     int count;            
@@ -10,15 +18,15 @@ typedef struct s_words {
 } words;
 
 words *create_words(char *word){
-    words *newWord = malloc(sizeof(words));
-    if (newWord != NULL) {
-        newWord->str = (char *)malloc((strlen(word)) + 1);
-        strcpy(newWord->str, word);
-        newWord->str[strlen(word)] = '\0';
-        newWord->count = 1;
-        newWord->next = NULL;
+    words *tmpWord = malloc(sizeof(words));
+    if (tmpWord != NULL) {
+        tmpWord->str = (char *)malloc((strlen(word)) + 1);
+        strcpy(tmpWord->str, word);
+        tmpWord->str[strlen(word)] = '\0';
+        tmpWord->count = 1;
+        tmpWord->next = NULL;
     }
-    return newWord;
+    return tmpWord;
 }
 
 words *add_word(words **wordList, char *word) { 
@@ -34,11 +42,11 @@ words *add_word(words **wordList, char *word) {
             temp = temp->next;
     }
 
-    words *newWord = create_words(word);
-    if (NULL != newWord) { 
-        temp->next = newWord;
+    words *tmpWord = create_words(word);
+    if (NULL != tmpWord) { 
+        temp->next = tmpWord;
     }
-    return newWord;
+    return tmpWord;
 }
 
 int main(int argc, char *argv[]) {
@@ -71,17 +79,24 @@ int main(int argc, char *argv[]) {
 
     printf("\nWords in %s\n------------------------\n", argv[1]);
     int counted = 0;
+    char* dots = ".";
+
     while (linkList != NULL) {
-
         counted = linkList->count;
-
-        if(counted > 3 && strcmp(linkList->str,"the")!=0
+        if(counted > 0 && strcmp(linkList->str,"the")!=0
                        && strcmp(linkList->str,"i")!=0
                        && strcmp(linkList->str,"is")!=0
-                       && strcmp(linkList->str,"their")!=0) {
-            printf("%s %d \n", linkList->str, linkList->count);
-        }
-
+                       && strcmp(linkList->str,"their")!=0
+                       && strcmp(linkList->str,"of")!=0
+                       && strcmp(linkList->str,"\"")!=0
+                       && strcmp(linkList->str,"a") !=0
+                       && strcmp(linkList->str,"to")!=0) {
+            printf("%s", linkList->str);
+            for(int i=0; i<(40-strlen(linkList->str)); i++) {
+                printf("%s", dots);
+            }
+            printf("%d \n", linkList->count);
+        } 
         linkList = linkList->next;
     }
 
