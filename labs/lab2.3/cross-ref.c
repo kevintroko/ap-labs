@@ -3,8 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 
-
-
 // Based the characted handling from 
 // https://stackoverflow.com/questions/2661766/how-do-i-lowercase-a-string-in-c
 
@@ -41,7 +39,6 @@ words *add_word(words **wordList, char *word) {
         } else
             temp = temp->next;
     }
-
     words *tmpWord = create_words(word);
     if (NULL != tmpWord) { 
         temp->next = tmpWord;
@@ -92,8 +89,10 @@ int main(int argc, char *argv[]) {
                        && strcmp(linkList->str,"a") !=0
                        && strcmp(linkList->str,"to")!=0) {
             printf("%s", linkList->str);
-            for(int i=0; i<(40-strlen(linkList->str)); i++) {
-                printf("%s", dots);
+            if(strlen(linkList->str)<40) {
+                for(int i=0; i<(40-strlen(linkList->str)); i++) {
+                    printf("%s", dots);
+                }
             }
             printf("%d \n", linkList->count);
         } 
