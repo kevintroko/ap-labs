@@ -27,13 +27,20 @@ Compile
 ````
 make
 ````
-if everything fails for some reason then:
+If everything fails for some reason then:
 ````
-gcc cross-ref.c -o cross-ref.o
+gcc cross-ref.c -o cross-ref 
 ./cross-ref document.txt
 ````
 
-Compile 
+Clean 
 ----------
 Clean binaries
-
+````
+make clean
+````
+If everything fails for some reason then:
+````
+rm *.out
+rm -rf cross-ref
+````
