@@ -1,28 +1,62 @@
 Lab 2.1 - ClockWall
 ===================
 
-Modify the [clock2.go](./clock2.go) to accept a port number, and write a program `clockWall.go`, that acts as a client of several clock servers at once, reading the times from each one and displaying the results in a table, akin to the wall of clocks seen in some business offices. If you have access to geographically distributed computers, run instances remotely; otherwise run local instances on different ports with fake time zones.
+### Requirments
+- Golang, https://golang.org
+- Two terminals
 
-```
-# Clock Servers initialization
-$ TZ=US/Eastern    ./clock2 -port 8010 &
-$ TZ=Asia/Tokyo    ./clock2 -port 8020 &
-$ TZ=Europe/London ./clock2 -port 8030 &
+### Using makefiles
+In your **terminal 1** write:
+````
+make
+````
+!! Dont forget if you have servers running then:
+````
+make kill
+````
+if it doesn't work then:
+````
+killall clock2
+````
 
-# Starting clockWall client
-$ clockWall NewYork=localhost:8010 Tokyo=localhost:8020 London=localhost:8030
-NewYork : 12:00:00
-London  : 17:00:00
-Tokyo   : 02:00:00
-.
-.
-.
-```
+In your **terminal 2** write:
+````
+make clock
+````
 
-General Requirements and Considerations
----------------------------------------
-- Use the `clock2.go` and `clockWall.go` files for your implementation.
-- Update `README.md` with the proper steps for building and running your code.
-- Follow the command-line arguments convention.
-- Don't forget to handle errors properly.
-- Coding best practices implementation will be also considered.
+Finally, clean your binaries with
+````
+make clean
+````
+if it doesn't work then:
+````
+rm -rf clock2
+rm -rf clockWall
+````
+
+### Compile by hand
+First compile the files 
+````
+	go build clock2.go
+	go build clockWall.go
+````
+
+Now in your **terminal 1** write:
+````
+		TZ=<timezone> ./clock2 -port <portNumber>
+
+````
+
+Example for multiple timezones
+````
+	TZ=US/Eastern    ./clock2 -port 8010 & TZ=Asia/Tokyo    ./clock2 -port 8020 & TZ=Europe/London ./clock2 -port 8030 &
+````
+
+To run the client in your **terminal 2** write: 
+````
+	./clockWall <city name>=<host>:<port> 
+````
+An example for running multiple clients:
+````
+	./clockWall NewYork=localhost:8010 Tokyo=localhost:8020 London=localhost:8030
+````
