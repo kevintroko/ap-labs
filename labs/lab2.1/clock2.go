@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 	"time"
 )
 
@@ -19,8 +20,21 @@ func handleConn(c net.Conn) {
 	}
 }
 
+/*
+TZ=US/Eastern      ./clock2 -port 8010 &
+$ TZ=Asia/Tokyo    ./clock2 -port 8020 &
+$ TZ=Europe/London ./clock2 -port 8030 &*/
+
 func main() {
-	listener, err := net.Listen("tcp", "localhost:9090")
+	// Check for port in console
+	var port string
+	if os.Args[1] == "-port" {
+		port = os.Args[2]
+	}
+
+	log.Print("Create clock server on port: ", port);
+	
+	listener, err := net.Listen("tcp", "localhost:"+port)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,3 +47,5 @@ func main() {
 		go handleConn(conn) // handle connections concurrently
 	}
 }
+
+
