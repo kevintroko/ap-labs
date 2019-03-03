@@ -1,14 +1,18 @@
 #include <syslog.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#define Color_red "\33[0:31m\\]"
+#define Color_blue "\033[22;34"
+#define Color_end "\033[0m"
 
 void openlog(const char *ident, int log_options, int facility);
 void syslog(int priority, const char *format, ...);
 
 int infof(const char *format, ...);
-// int warnf(const char *format, ...);
-// int errorf(const char *format, ...);
-// int panicf(const char *format, ...);
+int warnf(const char *format, ...);
+int errorf(const char *format, ...);
+int panicf(const char *format, ...);
 
  int infof(const char *format, ...) {
     va_list list;
@@ -30,7 +34,7 @@ int infof(const char *format, ...);
     return 0;
 }
 
- int errof(const char *format, ...) {
+ int errorf(const char *format, ...) {
     va_list list;
     va_start(list, format);
     char* arg = va_arg(list, char*);
@@ -52,5 +56,8 @@ int infof(const char *format, ...);
 
 int main(int argc, char *argv[]) {
     infof("info message", argv[0]);
+    warnf("warning message", argv[0]);
+    panicf("panic message", argv[0]);
+    errorf("error message", argv[0]);
     return 0;
 }
