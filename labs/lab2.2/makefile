@@ -1,6 +1,6 @@
 compile: 
-	gcc logger.c -o logger
-	./logger
+	gcc logger.c testLogger.c -o lab22
+	./lab22
 
 clean:
-	rm logger
+	rm lab22
