@@ -2,7 +2,7 @@ CC       = gcc
 CFLAGS   = -Wall
 LDFLAGS  =
 OBJFILES = logger.o testLogger.o
-TARGET   = logger.c testLogger.c -o lab22
+TARGET   = testLogger
 
 all: $(TARGET)
 
@@ -11,10 +11,3 @@ $(TARGET) : $(OBJFILES)
 
 clean:
 	rm -f $(OBJFILES) $(TARGET) *~
-
-# compile: 
-# 	gcc logger.c testLogger.c -o lab22
-# 	./lab22
-
-# clean:
-# 	rm lab22
