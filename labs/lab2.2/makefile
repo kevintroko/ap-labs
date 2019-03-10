@@ -1,20 +1,6 @@
-CC       = gcc
-CFLAGS   = -Wall
-LDFLAGS  =
-OBJFILES = logger.o testLogger.o
-TARGET   = logger.c testLogger.c -o lab22
-
-all: $(TARGET)
-
-$(TARGET) : $(OBJFILES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
+compile: 
+	gcc logger.c testLogger.c -o lab22
+	./lab22
 
 clean:
-	rm -f $(OBJFILES) $(TARGET) *~
-
-# compile: 
-# 	gcc logger.c testLogger.c -o lab22
-# 	./lab22
-
-# clean:
-# 	rm lab22
+	rm lab22
