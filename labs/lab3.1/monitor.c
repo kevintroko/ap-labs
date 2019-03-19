@@ -22,7 +22,7 @@ static void displayInotifyEvent(struct inotify_event *i);
 static int get_files(const char *fpath, const struct stat *sb, int flag, struct FTW *ftwbuf) {
     int wd = inotify_add_watch(inotifyFd, fpath, IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
     if (wd == -1) {
-        errorf("couldn't add to inotify_add_watch");
+        errorf("can't add inotify_add_watch");
         exit(EXIT_FAILURE);
     }
     return 0;
@@ -51,46 +51,46 @@ static void displayInotifyEvent(struct inotify_event *i) {
     switch (opt) {
     case 'd': flags |= FTW_DEPTH;
     case 'm': flags |= FTW_MOUNT;
-    case 'p': flags |= FTW_PHYS; default: usageError(argv[0], NULL); }
+    case 'x': flags |= FTW_PHYS; default: usageError(argv[0], NULL); }
     }
 */
 
 int main(int argc, char *argv[]) {
     inotifyFd = inotify_init();
-    if (inotifyFd == -1) {
-        errorf("couldn't create inotifyFd");
-        exit(EXIT_FAILURE);
-    }
-
     char buf[BUF_LEN] __attribute__((aligned(8)));
-    ssize_t numRead;
-    char *p;
+    ssize_t nRead;
+    char *x;
     struct inotify_event *event;
-    
-    int flags = FTW_PHYS; /* Don't follow symbolic links */
-    if (nftw((argc < 2) ? "." : argv[1], get_files, 20, flags) == -1) {
-        panicf("couldn't transverse nftw");
+
+    if (inotifyFd == -1) {
+        errorf("can't create inotifyFd");
         exit(EXIT_FAILURE);
     }
 
-    for (;;) { /* Read events forever */
-        numRead = read(inotifyFd, buf, BUF_LEN);
-        if (numRead == 0) {
+    int flags = FTW_PHYS;
+    if (nftw((argc < 2) ? "." : argv[1], get_files, 20, flags) == -1) {
+        panicf("can't transverse nftw");
+        exit(EXIT_FAILURE);
+    }
+
+    for (;;) { 
+        nRead = read(inotifyFd, buf, BUF_LEN);
+        if (nRead == 0) {
             panicf("read() from inotify fd returned 0!");
             exit(EXIT_FAILURE);
         }
-        if (numRead == -1) {
+        if (nRead == -1) {
             errorf("read");
             exit(EXIT_FAILURE);
         }
-        for (p = buf; p < buf + numRead;) {
-            event = (struct inotify_event *)p;
+        for (x = buf; x < buf + nRead;) {
+            event = (struct inotify_event *)x;
             displayInotifyEvent(event);
-            p += sizeof(struct inotify_event) + event->len;
+            x += sizeof(struct inotify_event) + event->len;
         }
         inotifyFd = inotify_init();
         if (nftw((argc < 2) ? "." : argv[1], get_files, 20, flags) == -1) {
-            panicf("couldn't transverse nftw");
+            panicf("can't transverse nftw");
             exit(EXIT_FAILURE);
         }
     }
