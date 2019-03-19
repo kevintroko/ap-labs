@@ -1,13 +1,12 @@
 CC       = gcc
-CFLAGS   = -Wall
-LDFLAGS  =
-OBJFILES = logger.o monitor.o
-TARGET   = monitor
 
-all: $(TARGET)
+compile:
+	$(CC) -c logger.c -o logger.o
+	$(CC) -c monitor.c -o monitor.o
+	$(CC) logger.o monitor.o -o main.o
+	./main.o .
 
-$(TARGET) : $(OBJFILES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
-
-clean:
-	rm -f $(OBJFILES) $(TARGET) *~
+clean: 
+	rm logger.o
+	rm monitor.o
+	rm main.o
