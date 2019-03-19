@@ -1,116 +1,98 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/inotify.h>
-#include <unistd.h>
-#include <ftw.h>
-#include <string.h>
-#include <stdint.h>
-#include "logger.h"
-#include <poll.h>
+// References
+// http://man7.org/linux/man-pages/man3/ftw.3.html
 
-#define EVENT_SIZE (sizeof(struct inotify_event))
-#define BUF_LEN (1024 * (EVENT_SIZE + 16))
 #define _XOPEN_SOURCE 500
 
-int wd;
-int fd;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include <limits.h>
+#include <unistd.h>
+#include <ftw.h>
+#include <sys/inotify.h>
+#include "logger.h"
 
-/* Read all available inotify events from the file descriptor 'fd'.
-          wd is the table of watch descriptors for the directories in argv.
-          argc is the length of wd and argv.
-          argv is the list of watched directories.
-          Entry 0 of wd and argv is unused. */
+#define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
+int inotifyFd;
+static int get_files(const char *fpath, const struct stat *sb, int flag, struct FTW *ftwbuf);
+static void displayInotifyEvent(struct inotify_event *i);
 
-static void getTree(char dir[]);
-static int addWatchers(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
-
-static void getTree(char dir[]) {
-    int flags = 0;
-    if (nftw(dir, addWatchers, 20, flags) == -1) {
-        errorf("nftw");
+static int get_files(const char *fpath, const struct stat *sb, int flag, struct FTW *ftwbuf) {
+    int wd = inotify_add_watch(inotifyFd, fpath, IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
+    if (wd == -1) {
+        errorf("can't add inotify_add_watch");
         exit(EXIT_FAILURE);
     }
-}
-
-static int addWatchers(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf) {
-    if ((intmax_t)sb->st_size == 4096) {
-        wd = inotify_add_watch(fd, fpath, IN_MODIFY | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
-    }
     return 0;
 }
 
-int main(int argc, char **argv) {
-    int length, i;
-    char buffer[BUF_LEN];
+static void displayInotifyEvent(struct inotify_event *i) {
+    if (i->mask & IN_CREATE)
+        infof("CREATE ");
+    if (i->mask & IN_DELETE)
+        infof("DELETE ");
+    if (i->mask & IN_MOVED_FROM)
+        infof("MOVED_FROM ");
+    if (i->mask & IN_MOVED_TO)
+        infof("MOVED_TO ");
+    printf("\n");
 
-    if (argc < 2) {
-        errorf("Incorrect usage, do: ./main [directory]\n");
-        return -1;
-    }
-
-    initLogger("stdout");
-    fd = inotify_init();
-
-    if (fd < 0) {
-        errorf("inotify_init");
-    }
-
-    getTree(argv[1]);
-
-    while (1) {
-        i = 0;
-        length = read(fd, buffer, BUF_LEN);
-
-        if (length < 0) {
-            perror("read");
-        }
-
-        while (i < length) {
-            struct inotify_event *event = (struct inotify_event *)&buffer;
-            if (event->len) {
-                if (event->mask & IN_CREATE) {
-                    if (event->mask == 256) {
-                        infof("The file %s was created.\n", event->name);
-                    }
-                    else if (event->mask == 1073742080) {
-                        infof("The directory %s was created.\n", event->name);
-                        getTree(argv[1]);
-                    }
-                } else if (event->mask & IN_DELETE) {
-                    if (event->mask == 512) {
-                        infof("The file %s was deleted.\n", event->name);
-                    } else if (event->mask == 1073742336) {
-                        infof("The directory %s was deleted.\n", event->name);
-                        getTree(argv[1]);
-                    }
-                }
-                else if (event->mask & IN_MODIFY) { //directory change
-                    infof("The file %s was modified.\n", event->name);
-                }
-                else if (event->mask & IN_MOVED_FROM) {
-                    if (event->mask == 64) {
-                        infof("The file %s was renamed ", event->name);
-                    }
-                    else if (event->mask == 1073741888) {
-                        infof("The directory %s was renamed ", event->name);
-                        getTree(argv[1]);
-                    }
-                }
-                
-                if (event->mask & IN_MOVED_TO) {
-                    infof("to %s.\n", event->name);
-                }
-            }
-            i += EVENT_SIZE + event->len;
-        }
-    }
-
-    (void)inotify_rm_watch(fd, wd);
-    (void)close(fd);
-
-    return 0;
+    if (i->len > 0)
+        printf("        name = %s\n", i->name);
 }
 
+/* main(int argc, char *argv[]) {
+    int flags, opt;
+    flags = 0;
+    while ((opt = getopt(argc, argv, "dmp")) !=
+    FTW_SLN) ? "SLN" :
+    switch (opt) {
+    case 'd': flags |= FTW_DEPTH;
+    case 'm': flags |= FTW_MOUNT;
+    case 'x': flags |= FTW_PHYS; default: usageError(argv[0], NULL); }
+    }
+*/
+
+int main(int argc, char *argv[]) {
+    inotifyFd = inotify_init();
+    char buf[BUF_LEN] __attribute__((aligned(8)));
+    ssize_t nRead;
+    char *x;
+    struct inotify_event *event;
+
+    if (inotifyFd == -1) {
+        errorf("can't create inotifyFd");
+        exit(EXIT_FAILURE);
+    }
+
+    int flags = FTW_PHYS;
+    if (nftw((argc < 2) ? "." : argv[1], get_files, 20, flags) == -1) {
+        panicf("can't transverse nftw");
+        exit(EXIT_FAILURE);
+    }
+
+    for (;;) { 
+        nRead = read(inotifyFd, buf, BUF_LEN);
+        if (nRead == 0) {
+            panicf("read() from inotify fd returned 0!");
+            exit(EXIT_FAILURE);
+        }
+        if (nRead == -1) {
+            errorf("read");
+            exit(EXIT_FAILURE);
+        }
+        for (x = buf; x < buf + nRead;) {
+            event = (struct inotify_event *)x;
+            displayInotifyEvent(event);
+            x += sizeof(struct inotify_event) + event->len;
+        }
+        inotifyFd = inotify_init();
+        if (nftw((argc < 2) ? "." : argv[1], get_files, 20, flags) == -1) {
+            panicf("can't transverse nftw");
+            exit(EXIT_FAILURE);
+        }
+    }
+    exit(EXIT_SUCCESS);
+}
