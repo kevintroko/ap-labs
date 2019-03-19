@@ -95,4 +95,8 @@ int main(int argc, char *argv[]) {
         }
     }
     exit(EXIT_SUCCESS);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fa930b83fcb47e51402e1a49c2ffdc7b2c900a72
