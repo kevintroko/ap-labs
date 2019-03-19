@@ -16,40 +16,26 @@ General Requirements and Considerations
 - Don't forget to handle errors properly.
 - Coding best practices implementation will be also considered.
 
+Compilation
+---------------------------------------
+You can go both by 
+`````
+make
+`````
 
-Submission Details
-==================
+or by hand version
+`````
+	gcc -c logger.c -o logger.o
+	gcc -c monitor.c -o monitor.o
+	gcc logger.o monitor.o -o main.o
+	./main.o .
+`````
 
-**NOTE:** I'm using my user `obedmr` for show casing purposes. Your real submission should use your github user account in lower case.
+Remember that in order to see the changes you have to run in another tab, to exit send a signal with ctrl+c 
 
-## Check Classify API
-```
-curl -k https://classify-232805.appspot.com/users/obedmr
-```
-Expected sample output:
-```
-{"message":"Welcome obedmr","user":"obedmr"}
-```
-
-
-## Submit your lab
-**Note:** Before submitting, make sure you do the common `git add`, `git commit` and `git push` for the new code changes in your `ap-labs` repository.
-```
-curl -k -X POST -d "commit=$(git rev-parse --short master)" https://classify-232805.appspot.com/labs/obedmr/lab3.1
-```
-
-Expected sample output:
-```
-{"commit":"755667f","dueDate":"Tue Mar 12 23:59:00 2019","labID":"lab3.1","message":"Submission Accepted","submissionDate":"Mon Mar  4 21:45:29 2019","user":"obedmr"}
-```
-
-
-## Check your Lab's submission
-```
-curl -k https://classify-232805.appspot.com/labs/obedmr/lab3.1
-```
-
-Expected sample output:
-```
-{"message":"Lab's submission data was successfully retrieved","submission":{"ID":"obedmr.lab3.1","LabID":"lab3.1","CommitID":"755667f","Date":"2019-03-05T03:45:29.500133921Z"},"user":"obedmr"}
-```
+Clean
+---------------------------------------
+Clear all the binaries with just a command
+`````
+make clean
+`````
