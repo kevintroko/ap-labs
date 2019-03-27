@@ -1,9 +1,8 @@
 CC       = gcc
 
 compile:
-	$(CC) -c logger.c -o logger.o
-	$(CC) -c base64.c -o base.o
-	$(CC) logger.o base.o -o base64.o
+	$(CC) base64.c logger.c -o base64
+	./base64 --encode sgt-pepper.txt
 
 clean:
 	rm logger.o
