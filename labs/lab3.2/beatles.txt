@@ -1,11 +1,3 @@
-      /     |    \
-     /      |     \
-    /O   O  | O   O\
-   //|\ /|\  /|\ /|\\              
-  /=/ \=/ \= / \=/ \=\
- / ==  ==  ==  ==  == \
-/ ==   ==  ==  ==   == \   
-
 ----- Getting Better -----
 It's getting better all the time
 I used to get mad at my school (No, I can't complain)
