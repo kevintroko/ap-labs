@@ -1,13 +1,13 @@
 CC       = gcc
-CFLAGS   = -Wall
-LDFLAGS  =
-OBJFILES = logger.o base64.o
-TARGET   = base64
 
-all: $(TARGET)
-
-$(TARGET) : $(OBJFILES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
+compile:
+	$(CC) -c logger.c -o logger.o
+	$(CC) -c base64.c -o base.o
+	$(CC) logger.o base.o -o base64.o
 
 clean:
-	rm -f $(OBJFILES) $(TARGET) *~
+	rm logger.o
+	rm base.o
+	rm base64.o
+	rm encoded.txt
+	rm decoded.txt
