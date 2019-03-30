@@ -6,11 +6,14 @@
 #include <time.h>
 #include <unistd.h>
 
-char *header  = "|%-6s | %-5s | %-25s | %-10s | %-10s | %-4s |\n";
-char *headDiv = "|-------|--------|---------------------------|------------|------------|-----------|\n";
-char *formato = "| %-5s | %-6s | %-25s | %-10s | %-9.1fM | %-9s |\n";
 
-struct process
+/** --USEFUL --
+https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/proc.html
+man proc command
+/proc/<PID>/status per-process file
+*/
+
+struct proceso
 {
     char name[45];
     char state[45];
@@ -20,8 +23,9 @@ struct process
     char threads[45];
 };
 
-static const struct process emptyProcess;
-struct process processes[500];
+// Struct for process
+static const struct proceso empty_process;
+struct proceso processes[500];
 
 void clear();
 int read_process();
@@ -49,13 +53,16 @@ int main()
 void clear() {
     for (int x = 0; processes[x].name[0] != '\0'; x++)
     {
-        processes[x] = emptyProcess;
+        processes[x] = empty_process;
     }
     printf("\e[1;1H\e[2J");
 }
 
-// Save process
+// Save proceso
 static void save_process() {
+    char *header = "|%-6s | %-5s | %-25s | %-10s | %-10s | %-4s |\n";
+    char *formato = "| %-5s | %-6s | %-25s | %-10s | %-9.1fM | %-9s |\n";
+    char *headDiv = "|-------|--------|---------------------------|------------|------------|-----------|\n";
     FILE *fp;
     time_t t = time(NULL);
     float memo;
@@ -82,7 +89,7 @@ static void save_process() {
     sleep(5);
 }
 
-// Read process
+// Read proceso
 int read_process() {
     DIR *d = opendir("/proc/");
     struct dirent *dir;
@@ -349,11 +356,14 @@ int read_process() {
 
 int print_process()
 {
-    int i = 0;
+    char *header = "|%-6s | %-5s | %-25s | %-10s | %-10s | %-4s |\n";
+    char *formato = "| %-5s | %-6s | %-25s | %-10s | %-9.1fM | %-9s |\n";
+    char *headDiv = "|-------|--------|---------------------------|------------|------------|-----------|\n";
     float memo;
     printf(header, " Pid", "Parent", "Name", "State", "Memory", "# Threads");
     printf("%s", headDiv);
 
+    int i = 0;
     while (processes[i].name[0] != '\0')
     {
         memo = atof(processes[i].memory) / 1000;
