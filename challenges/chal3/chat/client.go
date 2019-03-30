@@ -32,8 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// conn.Write([]byte(string(user)))
-	// conn.
+	conn.Write([]byte(string(user)))
 
 	done := make(chan struct{})
 	go func() {

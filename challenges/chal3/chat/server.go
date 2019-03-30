@@ -78,7 +78,7 @@ func handleConn(conn net.Conn) {
 
 	input := bufio.NewScanner(conn)
 	for input.Scan() {
-		messages <- who + ": " + input.Text()
+		messages <- addrToUsers[who].Username + ": " + input.Text()
 	}
 	// NOTE: ignoring potential errors from input.Err()
 
@@ -93,7 +93,23 @@ func handleConn(conn net.Conn) {
 
 func clientWriter(conn net.Conn, ch <-chan string) {
 	for msg := range ch {
+
 		fmt.Fprintln(conn, msg) // NOTE: ignoring network errors
+		if strings.Contains(msg, "/users") {
+			resp := "irc-server > "
+			for _, user := range addrToUsers {
+				resp += user.Username
+			}
+			conn.Write([]byte(resp)) //ignoring error
+
+			continue
+		}
+		if strings.Contains(msg, "/time") {
+			resp := "irc-server > " + time.Now().String()
+			conn.Write([]byte(resp)) //ignoring error
+
+			continue
+		}
 		if strings.Contains(msg, "/user ") {
 			resp := "irc-server > "
 			userMsg := strings.Split(msg, " ")
@@ -125,20 +141,6 @@ func clientWriter(conn net.Conn, ch <-chan string) {
 
 			continue
 		}
-		switch {
-		case msg == "/users":
-			resp := "irc-server > "
-			for _, user := range addrToUsers {
-				resp += user.Username
-			}
-			conn.Write([]byte(resp)) //ignoring error
-
-		case msg == "/time":
-			resp := "irc-server > " + time.Now().String()
-			conn.Write([]byte(resp)) //ignoring error
-		default:
-			fmt.Println("dumb user")
-		}
 	}
 }
 
@@ -163,16 +165,17 @@ func main() {
 			log.Print(err)
 			continue
 		}
-		// body, err := ioutil.ReadAll(conn)
-		// if err != nil {
-		// 	fmt.Println("error reading:", err.Error())
-		// }
-		// addr := conn.RemoteAddr().String()
-		// addrToUsers[addr] = &user{
-		// 	Username: string(body),
-		// 	IP:       addr,
-		// }
-		// addrToConn[addr] = conn
+		// body := bufio.NewScanner(conn).Text()
+		input := bufio.NewScanner(conn).Text()
+		body := string(input)
+
+		fmt.Println(string(body))
+		addr := conn.RemoteAddr().String()
+		addrToUsers[addr] = &user{
+			Username: body,
+			IP:       addr,
+		}
+		addrToConn[addr] = conn
 
 		go handleConn(conn)
 	}
