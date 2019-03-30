@@ -7,6 +7,18 @@ Add one or multiple signal handlers to catch the `SIGINFO` and `SIGINT`. Once a 
 
 You will need the proper mechanisms for tracking the progress of any encoding/decoding task. You program must support plain text input files.
 
+Compile
+--------
+````
+make
+````
+
+Manual Compilation
+--------
+````
+gcc base64.c logger.c -o base64
+````
+
 Encoding
 --------
 ```
@@ -39,7 +51,13 @@ Test files
 - [vgilante.txt](http://textfiles.com/stories/vgilante.txt)
 - [sick-kid.txt](http://textfiles.com/stories/sick-kid.txt)
 - [aesop11.txt](http://textfiles.com/stories/aesop11.txt)
+- sgt-pepper.txt (I added this one)
 
-Special Things 
+to get the txt files you can simply run 
+````
+make text
+````
+
+Special Thanks 
 ---------------------------------------
 https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
