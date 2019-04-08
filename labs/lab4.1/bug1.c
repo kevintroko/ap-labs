@@ -9,40 +9,44 @@
  *   et al. O'Reilly and Associates.
  * LAST REVISED: 03/07/17  Blaise Barney
  ******************************************************************************/
+#include "logger.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NUM_THREADS  6
+#define NUM_THREADS 6
 #define TCOUNT 10
 #define COUNT_LIMIT 12
 
-int     count = 0;
+int count = 0;
 pthread_mutex_t count_mutex;
 pthread_cond_t count_threshold_cv;
 
 void *inc_count(void *idp)
 {
-    int j,i;
-    double result=0.0;
+    int j, i;
+    double result = 0.0;
     long my_id = (long)idp;
-    for (i=0; i < TCOUNT; i++) {
-	pthread_mutex_lock(&count_mutex);
-	count++;
+    for (i = 0; i < TCOUNT; i++)
+    {
+        pthread_mutex_lock(&count_mutex);
+        count++;
 
-	/*
+        /*
 	   Check the value of count and signal waiting thread when condition is
 	   reached.  Note that this occurs while mutex is locked.
 	*/
-	if (count == COUNT_LIMIT) {
-	    pthread_cond_signal(&count_threshold_cv);
-	    printf("inc_count(): thread %ld, count = %d  Threshold reached.\n", my_id, count);
-	}
-	printf("inc_count(): thread %ld, count = %d, unlocking mutex\n", my_id, count);
-	pthread_mutex_unlock(&count_mutex);
+        if (count == COUNT_LIMIT)
+        {
+            //pthread_cond_signal(&count_threshold_cv); --> not the right approach, sorce of bug.
+            pthread_cond_broadcast(&count_threshold_cv); // Right approach.
+            infof("inc_count(): thread %ld, count = %d  Threshold reached.\n", my_id, count);
+        }
+        infof("inc_count(): thread %ld, count = %d, unlocking mutex\n", my_id, count);
+        pthread_mutex_unlock(&count_mutex);
 
-	/* Do some work so threads can alternate on mutex lock */
-	sleep(1);
+        /* Do some work so threads can alternate on mutex lock */
+        sleep(1);
     }
     pthread_exit(NULL);
 }
@@ -51,7 +55,7 @@ void *watch_count(void *idp)
 {
     long my_id = (long)idp;
 
-    printf("Starting watch_count(): thread %ld\n", my_id);
+    infof("Starting watch_count(): thread %ld\n", my_id);
 
     /*
       Lock mutex and wait for signal.  Note that the pthread_cond_wait routine
@@ -61,10 +65,11 @@ void *watch_count(void *idp)
       from never returning.
     */
     pthread_mutex_lock(&count_mutex);
-    while (count<COUNT_LIMIT) {
-	printf("***Before cond_wait: thread %ld\n", my_id);
-	pthread_cond_wait(&count_threshold_cv, &count_mutex);
-	printf("***Thread %ld Condition signal received.\n", my_id);
+    while (count < COUNT_LIMIT)
+    {
+        infof("***Before cond_wait: thread %ld\n", my_id);
+        pthread_cond_wait(&count_threshold_cv, &count_mutex);
+        infof("***Thread %ld Condition signal received.\n", my_id);
     }
     pthread_mutex_unlock(&count_mutex);
     pthread_exit(NULL);
@@ -78,7 +83,7 @@ int main(int argc, char *argv[])
 
     /* Initialize mutex and condition variable objects */
     pthread_mutex_init(&count_mutex, NULL);
-    pthread_cond_init (&count_threshold_cv, NULL);
+    pthread_cond_init(&count_threshold_cv, NULL);
 
     /*
       For portability, explicitly create threads in a joinable state
@@ -93,14 +98,15 @@ int main(int argc, char *argv[])
     pthread_create(&threads[1], &attr, inc_count, (void *)1);
 
     /* Wait for all threads to complete */
-    for (i = 0; i < NUM_THREADS; i++) {
-	pthread_join(threads[i], NULL);
+    for (i = 0; i < NUM_THREADS; i++)
+    {
+        pthread_join(threads[i], NULL);
     }
-    printf ("Main(): Waited on %d  threads. Done.\n", NUM_THREADS);
+    infof("Main(): Waited on %d  threads. Done.\n", NUM_THREADS);
 
     /* Clean up and exit */
     pthread_attr_destroy(&attr);
     pthread_mutex_destroy(&count_mutex);
     pthread_cond_destroy(&count_threshold_cv);
-    pthread_exit (NULL);
+    pthread_exit(NULL);
 }

@@ -55,10 +55,11 @@ void dotprod()
 
     mysum = 0;
     for (i=start; i<end ; i++) {
-	mysum += (x[i] * y[i]);
+	    mysum += (x[i] * y[i]);
+      printf("%f\n", mysum);
     }
     dotstr.sum = mysum;
-
+    
 }
 
 /*
@@ -76,8 +77,8 @@ int main (int argc, char *argv[])
     b = (double*) malloc (len*sizeof(double));
 
     for (i=0; i<len; i++) {
-	a[i]=1;
-	b[i]=a[i];
+      a[i]=1;
+      b[i]=a[i];
     }
 
     dotstr.veclen = len;

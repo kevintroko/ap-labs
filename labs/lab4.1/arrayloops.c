@@ -11,13 +11,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "logger.h"
+
 #define NTHREADS      4
 #define ARRAYSIZE   1000000
 #define ITERATIONS   ARRAYSIZE / NTHREADS
 
 double  sum=0.0, a[ARRAYSIZE];
 pthread_mutex_t sum_mutex;
-
 
 void *do_work(void *tid)
 {
@@ -28,10 +29,13 @@ void *do_work(void *tid)
     mytid = (int *) tid;
     start = (*mytid * ITERATIONS);
     end = start + ITERATIONS;
-    printf ("Thread %d doing iterations %d to %d\n",*mytid,start,end-1);
-    for (i=start; i < end ; i++) {
-	a[i] = i * 1.0;
-	mysum = mysum + a[i];
+    //  printf ("Thread %d doing iterations %d to %d\n",*mytid,start,end-1);
+    // for (i=start; i < end ; i++) {
+    infof("Thread %d doing iterations %d to %d\n", *mytid, start, end - 1);
+    for (i = start; i < end; i++)
+    {
+        a[i] = i * 1.0;
+        mysum = mysum + a[i];
     }
 
     /* Lock the mutex and update the global sum, then exit */
@@ -53,25 +57,29 @@ int main(int argc, char *argv[])
     pthread_mutex_init(&sum_mutex, NULL);
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    for (i=0; i<NTHREADS; i++) {
-	tids[i] = i;
-	pthread_create(&threads[i], &attr, do_work, (void *) &tids[i]);
+    for (i = 0; i < NTHREADS; i++)
+    {
+        tids[i] = i;
+        pthread_create(&threads[i], &attr, do_work, (void *)&tids[i]);
     }
 
     /* Wait for all threads to complete then print global sum */
-    for (i=0; i<NTHREADS; i++) {
-	pthread_join(threads[i], NULL);
+    for (i = 0; i < NTHREADS; i++)
+    {
+        pthread_join(threads[i], NULL);
     }
-    printf ("Done. Sum= %e \n", sum);
+    infof("Done. Sum= %e \n", sum);
 
-    sum=0.0;
-    for (i=0;i<ARRAYSIZE;i++){
-	a[i] = i*1.0;
-	sum = sum + a[i]; }
-    printf("Check Sum= %e\n",sum);
+    sum = 0.0;
+    for (i = 0; i < ARRAYSIZE; i++)
+    {
+        a[i] = i * 1.0;
+        sum = sum + a[i];
+    }
+    infof("Check Sum= %e\n", sum);
 
     /* Clean up and exit */
     pthread_attr_destroy(&attr);
     pthread_mutex_destroy(&sum_mutex);
-    pthread_exit (NULL);
+    pthread_exit(NULL);
 }
