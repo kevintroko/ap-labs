@@ -1,5 +1,4 @@
-// Logger
-
+// Logger lab 4.2
 int initLogger(char *logType);
 int infof(const char *format, ...);
 int warnf(const char *format, ...);
