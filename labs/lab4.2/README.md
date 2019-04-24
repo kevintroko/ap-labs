@@ -6,6 +6,12 @@ On this lab you will create a multi-threaded matrix multiplicator with the usage
 - Synchronization mechanisms
 - Race conditions
 
+Compile
+--------------------
+````
+make
+./multiplier -n 10
+````
 
 General instructions
 --------------------
