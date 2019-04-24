@@ -31,7 +31,6 @@ int initLogger(char *logType)
 
 int infof(const char *format, ...)
 {
-    printf("%d is the type\n", type);
     if (type == 0)
     {
         printf("<Info>: ");
