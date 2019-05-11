@@ -1,45 +1,55 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h> 
+
+#include "island.h"
 
 // @Todo check if an struct is better
 #define SIZE 5
-#define TOP 0
-#define LOW 9
+#define TOP 9
+#define LOW 1
+
+// Create Island
+int island[SIZE][SIZE];
 
 // Main Function
 int main() {
-    // Create Island
-    int island[SIZE][SIZE];
+    srand(time(0)); 
+    generateSeas();
+    printIsland();
+    return 0;
+}
 
-    // Generate values for each island cell
+void generateSeas() {
+     // Generate values for each island cell
     for(int i = 0; i < SIZE; i++) {
         for(int j = 0; j < SIZE; j++) {
-
             // Make north sea
             if(i==0) {
                 island[i][j] = 0;
             } 
-
             // Make west sea
             else if(j==0) {
                 island[i][j] = 0;
             } 
-
             // Make east sea
             else if(j==(SIZE-1)) {
                 island[i][j] = 0;
             } 
-
             // Make south sea
             else if(i==(SIZE-1)) {
                 island[i][j] = 0;
             } 
-
+            // Make land
             else {
-                island[i][j] = 2;
+                island[i][j] = (rand() % 
+                (TOP - LOW + 1)) + LOW; 
             }
         }
     }
-    
+}
+
+void printIsland() {
     printf("----------------\n");
     for(int i = 0; i < SIZE; i++) {
         for(int j = 0; j < SIZE; j++) {
@@ -48,6 +58,4 @@ int main() {
         printf("\n");
     }
     printf("----------------\n");
-
-    return 0;
 }
