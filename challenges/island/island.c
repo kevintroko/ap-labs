@@ -79,19 +79,30 @@ void printIsland() {
 void generateBall() {
     
     struct ball ball_test = {0};
+
     ball_test.x = getRandom(3,1);
     ball_test.y = getRandom(3,1);
    
-    printf("ball[%d,%d]:", ball_test.x, ball_test.y);
 
     if(island[ball_test.x][ball_test.y] != 0) {
-        printf(" landed on hill [%d]\n", island[ball_test.x][ball_test.y]);
+        printf("ball[%d,%d]: landed on hill [%d]\n", ball_test.x, ball_test.y, island[ball_test.x][ball_test.y]);
+        if(island[ball_test.x][ball_test.y] != 0) {
+
+            // west
+            printf("west : %d\n", island[ball_test.x][ball_test.y-1]);
+
+            // north
+            printf("north: %d\n", island[ball_test.x-1][ball_test.y]);
+
+            // south
+            printf("south: %d\n", island[ball_test.x+1][ball_test.y]);
+
+            // east
+            printf("east: %d\n", island[ball_test.x][ball_test.y+1]);    
+        }
+
     } else {
         printf(" landed on water [%d]\n", island[ball_test.x][ball_test.y]);
-    }
-
-    if(island[ball_test.x][ball_test.y] == 0) {
         seaCount++;
     }
-
 }
