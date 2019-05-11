@@ -4,19 +4,31 @@
 
 #include "island.h"
 
-// @Todo check if an struct is better
+// @Todo check if an struct for island is better
 #define SIZE 5
 #define TOP 9
 #define LOW 1
 
+// Ball Struct
+struct ball {
+    int x;
+    int y;
+};
+
 // Create Island
 int island[SIZE][SIZE];
+int seaCount = 0;
 
 // Main Function
 int main() {
+    // Randoms change every execution
     srand(time(0)); 
+   
     generateSeas();
+    generateBall();
     printIsland();
+
+    displayInfo(seaCount);
     return 0;
 }
 
@@ -42,11 +54,14 @@ void generateSeas() {
             } 
             // Make land
             else {
-                island[i][j] = (rand() % 
-                (TOP - LOW + 1)) + LOW; 
+                island[i][j] = getRandom(TOP, LOW); 
             }
         }
     }
+}
+
+int getRandom(int top, int low) {
+    return (rand() % (top - low + 1)) + low;
 }
 
 void printIsland() {
@@ -58,4 +73,25 @@ void printIsland() {
         printf("\n");
     }
     printf("----------------\n");
+}
+
+
+void generateBall() {
+    
+    struct ball ball_test = {0};
+    ball_test.x = getRandom(3,1);
+    ball_test.y = getRandom(3,1);
+   
+    printf("ball[%d,%d]:", ball_test.x, ball_test.y);
+
+    if(island[ball_test.x][ball_test.y] != 0) {
+        printf(" landed on hill [%d]\n", island[ball_test.x][ball_test.y]);
+    } else {
+        printf(" landed on water [%d]\n", island[ball_test.x][ball_test.y]);
+    }
+
+    if(island[ball_test.x][ball_test.y] == 0) {
+        seaCount++;
+    }
+
 }
