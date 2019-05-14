@@ -1,3 +1,2 @@
-compile: 
-	gcc island.c -o island
-	./island
+compile:
+	go run ballsRainingSimulator.go
